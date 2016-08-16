@@ -1,0 +1,73 @@
+﻿@model For_MSBC.Models.EmployeeViewModel
+
+@{
+    ViewBag.Title = "Employee Details";
+}
+<script src="~/Scripts/jquery-2.2.3.js"></script>
+<h3>@ViewBag.Title</h3>
+
+<br />
+<div class="form-group">
+    @Html.Label("Department Name", new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+        @Html.DropDownListFor(model => model.DeptId, new SelectList(ViewBag.DetpList, "DeptId", "Name"),"Select Category",
+        new { @class = "form-control" })
+    </div>
+    
+    @Html.Label("Employee Name", new { @class = "control-label col-md-2" })
+    <div class="col-md-10">
+    @Html.DropDownListFor(m => m.EmpID, new SelectList(Enumerable.Empty<SelectListItem>(), "Id", "Name"), "Select Name", new { @class = "form-control" })
+    </div>
+
+    
+</div>
+<br /><br />
+<div id="products">
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#DeptId").change(function () {
+            var Id = $("#DeptId").val();
+
+            $.ajax({
+                url: '@Url.Action("GetEployeeList", "Department")',
+                data: { 'DeptId': Id },
+                type: "GET",
+                success: function (response) {
+                    $("#products").html(response);
+                    },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+
+              
+            $.ajax({
+                url: '@Url.Action("FillEmployee", "Department")',
+                type: "GET",
+                dataType: "JSON",
+                data: { 'DeptId': Id },
+                success: function (employees) {
+                    alert(employees);
+                    $.each(employees, function (i, EmpID) {
+                        $("#EmpID").append(
+                            $('<option></option>').val(EmpID.Id).html(EmpID.Name));
+                    });
+                   
+                },
+                error: function (error) {
+                    alert('Error');
+                }
+            });
+
+        });
+
+    });
+</script>  
+
+
+
+       
